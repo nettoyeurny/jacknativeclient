@@ -261,4 +261,19 @@ public abstract class JackNativeClient {
 	static {
 		System.loadLibrary("jacknative");
 	}
+	
+	// Simple main routine, just to check whether we can start Jack clients.
+	public static void main(String[] args) throws JackException, InterruptedException {
+		JackNativeClient client = new JackNativeClient("test_client", 1, 2) {
+			@Override
+			protected void process(FloatBuffer[] inBuffers, FloatBuffer[] outBuffers) {
+				// Do nothing...
+			}
+		};
+		client.connectInputPorts("system");
+		client.connectOutputPorts("system");
+		while (true) {
+			Thread.sleep(1000);
+		}
+	}
 }
