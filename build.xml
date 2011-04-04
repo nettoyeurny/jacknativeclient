@@ -3,8 +3,8 @@
   <target name="all" depends="init, javac, javah, gcc"/>
 
   <target name="init">
-  	<property environment="env"/>
-  	<property name="JAVA_HOME"  location="${env.JAVA_HOME}"/>
+    <property environment="env"/>
+    <property name="JAVA_HOME"  location="${env.JAVA_HOME}"/>
   </target>
 
   <target name="javac" depends="init">
@@ -23,22 +23,19 @@
     <condition property="isMacOSX">
       <os name="Mac OS X"/>
     </condition>
-    <condition property="isLinux32">
+    <condition property="isLinux">
       <and>
         <os name="Linux"/>
-        <os arch="i386"/>
-      </and>
-    </condition>
-    <condition property="isLinux64">
-      <and>
-        <os name="Linux"/>
-        <os arch="amd64"/>
       </and>
     </condition>
     <mkdir dir="lib" />
     <antcall target="gcc_mac"/>
-    <antcall target="gcc_linux32"/>
-    <antcall target="gcc_linux64"/>
+    <antcall target="gcc_linux">
+      <param name="target_arch" value="-m32"/>
+    </antcall>
+    <antcall target="gcc_linux">
+      <param name="target_arch" value="-m64"/>
+    </antcall>
   </target>
 
   <target name="gcc_mac" if="isMacOSX">
@@ -67,9 +64,10 @@
     </exec>
   </target>
 
- <target name="gcc_linux32" if="isLinux32">
-    <mkdir dir="lib/linux32" />
+  <target name="gcc_linux" if="isLinux">
+    <mkdir dir="lib/linux${target_arch}" />
     <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
+      <arg value="${target_arch}"/>
       <arg value="-fPIC"/>
       <arg value="-I${JAVA_HOME}/include"/>
       <arg value="-I${JAVA_HOME}/include/linux"/>
@@ -78,31 +76,12 @@
       <arg value="jacknative.c"/>
     </exec>
     <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
+      <arg value="${target_arch}"/>
       <arg value="-shared"/>
       <arg value="-fPIC"/>
       <arg value="-ljack"/>
       <arg value="-o"/>
-      <arg value="../../../../../lib/linux32/libjacknative.so"/>
-      <arg value="jacknative.o"/>
-    </exec>
-  </target>
-
- <target name="gcc_linux64" if="isLinux64">
-    <mkdir dir="lib/linux64" />
-    <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
-      <arg value="-fPIC"/>
-      <arg value="-I${JAVA_HOME}/include"/>
-      <arg value="-I${JAVA_HOME}/include/linux"/>
-      <arg value="-I/usr/include/jack"/>
-      <arg value="-c"/>
-      <arg value="jacknative.c"/>
-    </exec>
-    <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
-      <arg value="-shared"/>
-      <arg value="-fPIC"/>
-      <arg value="-ljack"/>
-      <arg value="-o"/>
-      <arg value="../../../../../lib/linux64/libjacknative.so"/>
+      <arg value="../../../../../lib/linux${target_arch}/libjacknative.so"/>
       <arg value="jacknative.o"/>
     </exec>
   </target>
