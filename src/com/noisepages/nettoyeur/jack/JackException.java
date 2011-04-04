@@ -8,6 +8,7 @@ package com.noisepages.nettoyeur.jack;
 /**
  * Checked exception for Jack.
  * 
+ * @author Jens Gulden
  * @author Peter Brinkmann (peter.brinkmann@gmail.com
  */
 public class JackException extends Exception {

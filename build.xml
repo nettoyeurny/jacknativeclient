@@ -1,16 +1,14 @@
 <project name="jacknative" default="all">
 
-  <target name="all" depends="init, javac, javah, gcc">
-    <echo message="Ok."/>
-  </target>
+  <target name="all" depends="init, javac, javah, gcc"/>
 
   <target name="init">
-  	<property environment="env" />
+  	<property environment="env"/>
   	<property name="JAVA_HOME"  location="${env.JAVA_HOME}"/>
-    <property name="TMP"  location="/tmp"/>
   </target>
 
   <target name="javac" depends="init">
+    <mkdir dir="bin" />
     <javac source="1.6" target="1.6" destdir="bin">
       <src path="src"/>
       <include name="com/noisepages/nettoyeur/jack/*"/>
@@ -25,11 +23,26 @@
     <condition property="isMacOSX">
       <os name="Mac OS X"/>
     </condition>
-    <mkdir dir="lib/${os.arch}/${os.name}" />
+    <condition property="isLinux32">
+      <and>
+        <os name="Linux"/>
+        <os arch="i386"/>
+      </and>
+    </condition>
+    <condition property="isLinux64">
+      <and>
+        <os name="Linux"/>
+        <os arch="amd64"/>
+      </and>
+    </condition>
+    <mkdir dir="lib" />
     <antcall target="gcc_mac"/>
+    <antcall target="gcc_linux32"/>
+    <antcall target="gcc_linux64"/>
   </target>
 
   <target name="gcc_mac" if="isMacOSX">
+    <mkdir dir="lib/macosx" />
     <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
       <arg value="-I/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Headers"/>
       <arg value="-I/usr/local/include/jack"/>
@@ -49,7 +62,47 @@
       <arg value="-arch"/>
       <arg value="x86_64"/>
       <arg value="-o"/>
-      <arg value="../../../../../lib/${os.arch}/${os.name}/libjacknative.dylib"/>
+      <arg value="../../../../../lib/macosx/libjacknative.dylib"/>
+      <arg value="jacknative.o"/>
+    </exec>
+  </target>
+
+ <target name="gcc_linux32" if="isLinux32">
+    <mkdir dir="lib/linux32" />
+    <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
+      <arg value="-fPIC"/>
+      <arg value="-I${JAVA_HOME}/include"/>
+      <arg value="-I${JAVA_HOME}/include/linux"/>
+      <arg value="-I/usr/include/jack"/>
+      <arg value="-c"/>
+      <arg value="jacknative.c"/>
+    </exec>
+    <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
+      <arg value="-shared"/>
+      <arg value="-fPIC"/>
+      <arg value="-ljack"/>
+      <arg value="-o"/>
+      <arg value="../../../../../lib/linux32/libjacknative.so"/>
+      <arg value="jacknative.o"/>
+    </exec>
+  </target>
+
+ <target name="gcc_linux64" if="isLinux64">
+    <mkdir dir="lib/linux64" />
+    <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
+      <arg value="-fPIC"/>
+      <arg value="-I${JAVA_HOME}/include"/>
+      <arg value="-I${JAVA_HOME}/include/linux"/>
+      <arg value="-I/usr/include/jack"/>
+      <arg value="-c"/>
+      <arg value="jacknative.c"/>
+    </exec>
+    <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
+      <arg value="-shared"/>
+      <arg value="-fPIC"/>
+      <arg value="-ljack"/>
+      <arg value="-o"/>
+      <arg value="../../../../../lib/linux64/libjacknative.so"/>
       <arg value="jacknative.o"/>
     </exec>
   </target>
