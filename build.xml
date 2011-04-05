@@ -2,6 +2,11 @@
 
   <target name="all" depends="init, javac, javah, gcc"/>
 
+  <target name="clean">
+    <delete dir="bin"/>
+    <delete dir="lib"/>
+  </target>
+
   <target name="init">
     <property environment="env"/>
     <property name="JAVA_HOME"  location="${env.JAVA_HOME}"/>
@@ -31,10 +36,10 @@
     <mkdir dir="lib" />
     <antcall target="gcc_mac"/>
     <antcall target="gcc_linux">
-      <param name="target_arch" value="-m32"/>
+      <param name="target_arch" value="32"/>
     </antcall>
     <antcall target="gcc_linux">
-      <param name="target_arch" value="-m64"/>
+      <param name="target_arch" value="64"/>
     </antcall>
   </target>
 
@@ -67,7 +72,7 @@
   <target name="gcc_linux" if="isLinux">
     <mkdir dir="lib/linux${target_arch}" />
     <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
-      <arg value="${target_arch}"/>
+      <arg value="-m${target_arch}"/>
       <arg value="-fPIC"/>
       <arg value="-I${JAVA_HOME}/include"/>
       <arg value="-I${JAVA_HOME}/include/linux"/>
@@ -76,7 +81,7 @@
       <arg value="jacknative.c"/>
     </exec>
     <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
-      <arg value="${target_arch}"/>
+      <arg value="-m${target_arch}"/>
       <arg value="-shared"/>
       <arg value="-fPIC"/>
       <arg value="-ljack"/>
