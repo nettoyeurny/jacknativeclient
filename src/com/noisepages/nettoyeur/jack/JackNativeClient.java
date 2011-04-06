@@ -20,6 +20,10 @@ import java.util.Set;
  */
 public abstract class JackNativeClient {
 
+	static {
+		System.loadLibrary("jacknative");
+	}
+
 	private long infPointer = 0;
 	private final Set<JackNativeClientListener> listeners = new HashSet<JackNativeClientListener>();
 	private final FloatBuffer[] outBuffers;
@@ -258,10 +262,6 @@ public abstract class JackNativeClient {
 		}
 	}
 
-	static {
-		System.loadLibrary("jacknative");
-	}
-	
 	// Simple main routine, just to check whether we can start Jack clients.
 	public static void main(String[] args) throws JackException, InterruptedException {
 		JackNativeClient client = new JackNativeClient("test_client", 1, 2) {
