@@ -227,7 +227,6 @@ public abstract class JackNativeClient {
 	 * @param in: the direct memory access input buffer
 	 * @param out: the direct memory access output buffer
 	 */
-	@SuppressWarnings("unused")
 	private void processBytes(ByteBuffer[] in, ByteBuffer[] out, boolean realloc) {
 		if (realloc) {
 			for (int i=0; i<portsOut; i++) {
@@ -250,7 +249,6 @@ public abstract class JackNativeClient {
 	/**
 	 * This method is called directly from native code in the event of zombification.
 	 */
-	@SuppressWarnings("unused")
 	private synchronized void handleShutdown() {
 		System.err.println("native jack client "+this+" has been zombified!");
 		for(JackNativeClientListener listener: listeners) {
