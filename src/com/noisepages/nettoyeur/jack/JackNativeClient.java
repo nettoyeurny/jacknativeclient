@@ -20,6 +20,10 @@ import java.util.Set;
  */
 public abstract class JackNativeClient {
 
+	static {
+		System.loadLibrary("jacknative");
+	}
+
 	private long infPointer = 0;
 	private final Set<JackNativeClientListener> listeners = new HashSet<JackNativeClientListener>();
 	private final FloatBuffer[] outBuffers;
@@ -52,9 +56,9 @@ public abstract class JackNativeClient {
 	 * @throws JackException
 	 */
 	public JackNativeClient(String name, int portsIn, int portsOut, boolean isDaemon) throws JackException {
-		if (name==null || name.equals("")) throw new IllegalArgumentException("name cannot be null or empty");
-		if (portsIn<0 || portsIn>getMaxPorts()) throw new IllegalArgumentException("input ports out of range");
-		if (portsOut<0 || portsOut>getMaxPorts()) throw new IllegalArgumentException("output ports out of range");
+		if (name == null || name.equals("")) throw new IllegalArgumentException("name cannot be null or empty");
+		if (portsIn < 0 || portsIn > getMaxPorts()) throw new IllegalArgumentException("input ports out of range");
+		if (portsOut < 0 || portsOut > getMaxPorts()) throw new IllegalArgumentException("output ports out of range");
 
 		this.portsIn = portsIn;
 		this.portsOut = portsOut;
@@ -157,15 +161,15 @@ public abstract class JackNativeClient {
 	}
 
 	private void checkRange(int port, int range, int nPorts) {
-		if (infPointer==0) throw new IllegalStateException("native client invalid");
-		if (port<0 || port+range>nPorts) throw new IllegalArgumentException("ports out of range");
+		if (infPointer == 0) throw new IllegalStateException("native client invalid");
+		if (port < 0 || port + range > nPorts) throw new IllegalArgumentException("ports out of range");
 	}
 
 	/**
 	 * closes and deallocates the native client
 	 */
 	public void close() {
-		if (infPointer!=0) {
+		if (infPointer != 0) {
 			closeClient(infPointer);
 			infPointer = 0;
 		}
@@ -229,17 +233,17 @@ public abstract class JackNativeClient {
 	 */
 	private void processBytes(ByteBuffer[] in, ByteBuffer[] out, boolean realloc) {
 		if (realloc) {
-			for (int i=0; i<portsOut; i++) {
+			for (int i = 0; i < portsOut; i++) {
 				outBuffers[i] = out[i].order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
 			}
-			for (int i=0; i<portsIn; i++) {
+			for (int i = 0; i < portsIn; i++) {
 				inBuffers[i] = in[i].order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
 			}
 		} else {
-			for(int i=0; i<portsOut; i++) {
+			for(int i = 0; i < portsOut; i++) {
 				outBuffers[i].rewind();
 			}
-			for(int i=0; i<portsIn; i++) {
+			for(int i = 0; i < portsIn; i++) {
 				inBuffers[i].rewind();
 			}
 		}
@@ -250,16 +254,12 @@ public abstract class JackNativeClient {
 	 * This method is called directly from native code in the event of zombification.
 	 */
 	private synchronized void handleShutdown() {
-		System.err.println("native jack client "+this+" has been zombified!");
+		System.err.println("native jack client " + this + " has been zombified!");
 		for(JackNativeClientListener listener: listeners) {
 			listener.handleShutdown(this);
 		}
 	}
 
-	static {
-		System.loadLibrary("jacknative");
-	}
-	
 	// Simple main routine, just to check whether we can start Jack clients.
 	public static void main(String[] args) throws JackException, InterruptedException {
 		JackNativeClient client = new JackNativeClient("test_client", 1, 2) {
