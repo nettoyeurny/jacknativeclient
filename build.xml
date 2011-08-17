@@ -29,9 +29,7 @@
       <os name="Mac OS X"/>
     </condition>
     <condition property="isLinux">
-      <and>
-        <os name="Linux"/>
-      </and>
+      <os name="Linux"/>
     </condition>
     <mkdir dir="lib" />
     <antcall target="gcc_mac"/>
@@ -46,7 +44,7 @@
   <target name="gcc_mac" if="isMacOSX">
     <mkdir dir="lib/macosx" />
     <exec executable="gcc" dir="src/com/noisepages/nettoyeur/jack" failonerror="yes">
-      <arg value="-I/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Headers"/>
+      <arg value="-I${JAVA_HOME}/include"/>
       <arg value="-I/usr/local/include/jack"/>
       <arg value="-c"/>
       <arg value="jacknative.c"/>
