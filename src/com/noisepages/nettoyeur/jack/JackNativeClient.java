@@ -35,10 +35,9 @@ public abstract class JackNativeClient {
 	/**
 	 * Constructor; opens native client
 	 * 
-	 * @param name: name of native client
-	 * @param portsIn: number of input ports
-	 * @param portsOut: number of output ports
-	 * @param proc: processor for jack callback
+	 * @param name name of native client
+	 * @param portsIn number of input ports
+	 * @param portsOut number of output ports
 	 * @throws JackException
 	 */
 	public JackNativeClient(String name, int portsIn, int portsOut) throws JackException {
@@ -48,11 +47,10 @@ public abstract class JackNativeClient {
 	/**
 	 * Opens and starts a native JACK client
 	 * 
-	 * @param name
-	 * @param portsIn
-	 * @param portsOut
-	 * @param proc
-	 * @param isDaemon: flag indicating whether to attach JACK thread as daemon
+	 * @param name name of native client
+	 * @param portsIn number of input ports
+	 * @param portsOut number of output ports
+	 * @param isDaemon flag indicating whether to attach JACK thread as daemon
 	 * @throws JackException
 	 */
 	public JackNativeClient(String name, int portsIn, int portsOut, boolean isDaemon) throws JackException {
@@ -228,8 +226,8 @@ public abstract class JackNativeClient {
 	/**
 	 * JACK processing callback; called directly from native code, and only from there.
 	 *
-	 * @param in: the direct memory access input buffer
-	 * @param out: the direct memory access output buffer
+	 * @param in the direct memory access input buffer
+	 * @param out the direct memory access output buffer
 	 */
 	private void processBytes(ByteBuffer[] in, ByteBuffer[] out, boolean realloc) {
 		if (realloc) {
