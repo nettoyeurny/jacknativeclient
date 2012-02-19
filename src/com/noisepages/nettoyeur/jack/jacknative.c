@@ -256,7 +256,7 @@ JNIEXPORT jlong JNICALL Java_com_noisepages_nettoyeur_jack_JackNativeClient_open
   inf->owner = (*env)->NewWeakGlobalRef(env, obj);
   inf->isDaemon = (isDaemon==JNI_TRUE);
 
-  char *name = allocchars(env, clientName);
+  const char *name = allocchars(env, clientName);
   fprintf(stderr, "opening jack client \"%s\"\n", name);
   jack_client_t *client = jack_client_open(name, JackNullOption, NULL);
   freechars(env, clientName, name);
@@ -303,10 +303,10 @@ int connectPorts(JNIEnv *env, jobject obj, jlong infPtr, jint port, jint range, 
   fprintf(stderr, "connecting %s ports\n", MODE_LABEL[mode]);
 
   INF inf = (INF) infPtr;
-  char *targetPort = allocchars(env, target);
+  const char *targetPort = allocchars(env, target);
   int portFlags = (*targetPort) ? 0 : JackPortIsPhysical;
-  char **ports = jack_get_ports(inf->client, targetPort,
-                        NULL, portFlags|MODE_JACK[1-mode]);
+  const char **ports = jack_get_ports(inf->client, targetPort,
+                              NULL, portFlags|MODE_JACK[1-mode]);
   freechars(env, target, targetPort);
   if (ports == NULL) return 0;
 
